@@ -17,6 +17,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import webcrawler.WebCrawler;
 import webcrawler.WebScrapper;
+import webcrawler.PorterStemmer;
 /**
  *
  * @author amtme
@@ -36,16 +37,16 @@ public class main {
         while(i.hasNext())  
         {  
             JSONObject json = WebScrapper.getDocument(i.next());
-            System.out.println(json.toString());
+           
             finalJSON.put("Page "+index ,json);
             index++;
         }
         try 
         {
-            FileWriter file = new FileWriter("jsonWiki.json");
+            FileWriter file = new FileWriter("jsonWiki2.json");
             file.write(finalJSON.toJSONString());
             file.close();
-            System.out.println(finalJSON.toString());
+            
         } catch (IOException e) {
          // TODO Auto-generated catch block
          e.printStackTrace();
@@ -59,9 +60,15 @@ public class main {
         HashSet<String>urlLinks; 
        
         // pick a URL from the frontier and call the getPageLinks()method  
-        urlLinks = obj.getPageLinks("https://es.wikipedia.org/wiki/María_Pretiz", 0);  
+        urlLinks = obj.getPageLinks("https://es.wikipedia.org/wiki/María_Pretiz", 0); 
+        System.out.println("Crawl Ready");
         scrappy(urlLinks);
-        
-        }  
+        System.out.println("Scrappy Ready");
+        /*
+        PorterStemmer stemmer = new PorterStemmer();
+        String word = stemmer.stemWord("technique");
+        System.out.println(word);
+        */
+    }  
     
 }

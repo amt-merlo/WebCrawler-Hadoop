@@ -36,7 +36,7 @@ public class WebCrawler {
         //we use the conditional statement to check whether we have already crawled the URL or not.  
         // we also check whether the depth reaches to MAX_DEPTH or not  
         if ((!urlLinks.contains(URL) && (depth <MAX_DEPTH))) {   
-             System.out.println(">> Depth: " + depth + " [" + URL + "]");   
+             
             // use try catch block for recursive process  
             try {   
                 // if the URL is not present in the set, we add it to the set  

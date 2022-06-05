@@ -5,6 +5,9 @@
 package webcrawler;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -16,12 +19,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import java.util.Locale;
 /**
  *
  * @author amtme
  */
 public class WebScrapper {
     public static JSONObject getDocument(String url) {
+        PorterStemmer stemmer = new PorterStemmer();
         
         //First, we connect to the page by the given url
         Connection conn = Jsoup.connect(url);
@@ -36,25 +41,32 @@ public class WebScrapper {
         //Then, we create a JSONObject object
         JSONObject jsonObject = new JSONObject();
         
-        //We extract all the p tags
+        /*=====Extracting all the <p> tags=====*/
         try
         {
             Elements paragraphs = document.select("p");
             String text = "";
             for (Element p : paragraphs.select("p"))
             {
+                
                 text += p.text();
             }
 
-            jsonObject.put("Content", text); //We add it to the json structure
+            String cleanedText = removerStopWords(text); //Removing stopwords 
+            cleanedText = cleanText(cleanedText); //Removing symbols
+            
+            cleanedText = stemmer.stem(cleanedText); //Stemming the text
+            
+            
+            jsonObject.put("Content", cleanedText); //We add it to the json structure
         }catch(Exception h){
             System.out.println("Controlada HttpStatusException");
         }
        
         
+        /*=====Extracting all the subtitles under the h2 tag=====*/
         try
         {
-            //We extract all the subtitles under the h2 tag
             Elements h2 = document.select("h2");
             //We make a JSONArray to put all the subtitles together
             JSONArray array = new JSONArray();
@@ -62,27 +74,60 @@ public class WebScrapper {
             //Adding the subtitles to the JSONArray
             for (Element e : h2.select("h2"))
             {   
-                array.add(e.text().replace("[editar]", ""));
+                String subtitle = e.text().replace("[editar]", "");
+                subtitle = stemmer.stem(subtitle); //Stemming the words
+                array.add(subtitle);
             }
 
             jsonObject.put("Subtitles", array); //we add them to the json structure
             
-            //We get the page title
+            /*=====Extracting the page title=====*/
             String title = document.select("h1").text();
+            title = stemmer.stem(title);
         
-        jsonObject.put("Title", title); //we add it to the json structure
+            jsonObject.put("Title", title); //we add it to the json structure
+
+            /*=====Extracting the page images src and alt=====*/
+           
+            Elements images = document.getElementsByTag("img");
+            for(Element image : images)
+            {
+                System.out.println(image.attr("alt"));
+            }
+        
         }catch(Exception e){
             
         }
-        
-        
-        
-        
         
         
         return jsonObject;
         
     }
     
+    public static String removerStopWords(String texto){
+        try{
+            String archivo = "C:\\Users\\amtme\\Documents\\NetBeansProjects\\WebCrawler\\stopwords.txt";
+            List<String> stopwords = Files.readAllLines(Paths.get(archivo));
+            String[] nuevo = texto.toLowerCase().split(" ");
+            StringBuilder builder = new StringBuilder();
+            for (String palabra: nuevo){
+                
+                if(!stopwords.contains(palabra)) { //removemos stopwords
+                    builder.append(palabra);
+                    builder.append(' ');
+                }
+            }
+            String result = builder.toString().trim();
+            return result;
+        }
+        catch (Exception e){
+            return null;
+        }
+    }
     
+  public static String cleanText(String text){
+      String cleaned = text.replaceAll("[*:;().=?¿¡!,]", "");
+     
+      return cleaned;
+  }
 }
