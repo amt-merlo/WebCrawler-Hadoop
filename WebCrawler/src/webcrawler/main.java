@@ -43,7 +43,7 @@ public class main {
         }
         try 
         {
-            FileWriter file = new FileWriter("jsonWiki2.json");
+            FileWriter file = new FileWriter("jsonFinal.json");
             file.write(finalJSON.toJSONString());
             file.close();
             

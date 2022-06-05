@@ -88,13 +88,21 @@ public class WebScrapper {
             jsonObject.put("Title", title); //we add it to the json structure
 
             /*=====Extracting the page images src and alt=====*/
-           
+            JSONObject singleImage = new JSONObject(); //We have a json to put [image scr, image alt]
+            JSONArray imagesArray = new JSONArray(); //We have a json to put all the single image's information together
+            int index=0;
+            
             Elements images = document.getElementsByTag("img");
             for(Element image : images)
             {
-                System.out.println(image.attr("alt"));
+                singleImage.put("url", image.attr("src"));
+                singleImage.put("alt", image.attr("alt"));
+                
+                imagesArray.add(index, singleImage);
+                index++;
             }
-        
+            System.out.println("=======================");
+            System.out.println(imagesArray.toString());
         }catch(Exception e){
             
         }
