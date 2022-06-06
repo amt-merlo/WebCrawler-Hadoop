@@ -38,12 +38,23 @@ public class WebScrapper {
         
         }
         
+        
         //Then, we create a JSONObject object
         JSONObject jsonObject = new JSONObject();
+        /*jsonObject.put("Page",main.quantity);
+        main.quantity++;*/
         
+          
         /*=====Extracting all the <p> tags=====*/
         try
         {
+            
+            /*=====Extracting the page title=====*/
+            String title = document.select("h1").text();
+            title = stemmer.stem(title);
+        
+            jsonObject.put("Title", title); //we add it to the json structure
+            
             Elements paragraphs = document.select("p");
             String text = "";
             for (Element p : paragraphs.select("p"))
@@ -81,28 +92,28 @@ public class WebScrapper {
 
             jsonObject.put("Subtitles", array); //we add them to the json structure
             
-            /*=====Extracting the page title=====*/
-            String title = document.select("h1").text();
-            title = stemmer.stem(title);
-        
-            jsonObject.put("Title", title); //we add it to the json structure
-
+           
             /*=====Extracting the page images src and alt=====*/
-            JSONObject singleImage = new JSONObject(); //We have a json to put [image scr, image alt]
-            JSONArray imagesArray = new JSONArray(); //We have a json to put all the single image's information together
+            
+            JSONObject imagesArray = new JSONObject(); //We have a json to put all the single image's information together
             int index=0;
             
             Elements images = document.getElementsByTag("img");
             for(Element image : images)
             {
-                singleImage.put("url", image.attr("src"));
-                singleImage.put("alt", image.attr("alt"));
+                JSONObject singleImage = new JSONObject(); //We have a json to put [image scr, image alt]
                 
-                imagesArray.add(index, singleImage);
+                String cleanedText = removerStopWords(image.attr("alt")); //Removing stopwords 
+                cleanedText = cleanText(cleanedText); //Removing symbols
+                cleanedText = stemmer.stem(cleanedText); //Stemming the text
+                
+                singleImage.put("url", image.attr("src"));
+                singleImage.put("alt", cleanedText);
+                imagesArray.put("Image: "+index, singleImage);
                 index++;
             }
-            System.out.println("=======================");
-            System.out.println(imagesArray.toString());
+            
+           jsonObject.put("Images", imagesArray); //we add the images array to the json structure 
         }catch(Exception e){
             
         }
