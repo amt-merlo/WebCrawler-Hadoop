@@ -48,6 +48,7 @@ public class WebScrapper {
         /*=====Extracting all the <p> tags=====*/
         try
         {
+            jsonObject.put("URL", url);
             
             /*=====Extracting the page title=====*/
             String title = document.select("h1").text();
@@ -86,6 +87,7 @@ public class WebScrapper {
             for (Element e : h2.select("h2"))
             {   
                 String subtitle = e.text().replace("[editar]", "");
+                subtitle = e.text().replace("[edit]", "");
                 subtitle = stemmer.stem(subtitle); //Stemming the words
                 array.add(subtitle);
             }

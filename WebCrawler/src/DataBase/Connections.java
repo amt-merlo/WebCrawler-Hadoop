@@ -60,8 +60,8 @@ public class Connections {
             pstmt.setString(3, link);
             pstmt.setInt(4, cantSubtitulos);
             pstmt.setInt(5, cantPalabras);
-            pstmt.setInt(6, cantPalabrasTitulo);
-            pstmt.setInt(7, cantReferencias);
+            pstmt.setInt(6, cantReferencias);
+            pstmt.setInt(7, cantPalabrasTitulo);
             
             int success = pstmt.executeUpdate();
             
